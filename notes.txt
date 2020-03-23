@@ -45,7 +45,56 @@ Starting up
       Configurando VSCode para Node.js, ReactJS e React Native | Diego Fernandes
       https://www.youtube.com/watch?v=c7P03kkrEG8
 
-    
+
+    Managing node versions:
+
+      Check current version on use:
+
+        node -v
+
+      List all versions available on your computer:
+
+        nvm ls
+
+      Switch to another version:
+
+        nvm use <version number or version name>
+
+        ex: nvm use 12.6.0, or nvm use stable
+
+      => So in this OmniStack Week 11, Diego uses Node 12.
+
+
+    Basic Terminal commands used now by me:
+
+      rm -R node_modules (to get rid of the install made with the wrong Node version)
+      rm package.json (to get rid of the install made with the wrong Node version)
+      rm package-lock.json (to get rid of the install made with the wrong Node version)
+
+    Finally, create a .gitignore file that includes node_modules:
+
+      echo "node_modules" >> .gitignore
+
+      .gitignore file won't apper in a simple 'ls' command on yout Terminal. To see it run: 'ls -a'
+      Visual Studio Code may show you those kind of files. But is most people don't trust that much on this.
+
+    Now we are good and using node 12.
+
+    Starting!
+
+      The Package.json file:
+
+        backend (dev) $ npm init -y
+
+      Frameworks:
+
+        Express
+        It's a micro-framework (just a few features)
+
+        backend (dev) $ npm install express      
+
+
+
 
 
 
