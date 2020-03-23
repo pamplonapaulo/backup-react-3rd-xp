@@ -139,6 +139,16 @@ Starting up
 
     * React Native:
 
+    General introduction...
+
+    Something to remember: Expo has not bluetooth APIs.
+
+    Off-topic:
+
+      Watch it later:
+
+        Features do ES2020 para o JavaScript
+        https://www.youtube.com/watch?v=qaSwiYBC3sk&feature=emb_rel_pause
 
 
 
