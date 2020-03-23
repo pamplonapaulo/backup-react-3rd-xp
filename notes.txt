@@ -1,0 +1,60 @@
+
+Starting up
+
+  Setting environment
+
+  Package Manager:
+
+    Mac:
+
+    homebrew
+
+      brew.sh
+
+        Home brew global install:
+
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+        Node global install:
+
+          brew install node@12
+
+    Windows:
+
+      chocolatey.org
+
+      https://chocolatey.org/install
+
+      powershell.exe (only Windows): Open it in admin mode.
+
+  Visual Studio Code
+
+    Settings:
+
+
+    Extensions:
+    
+    1. Theme: Dracula Official
+
+      Set Color Theme: Dracula
+
+    2. Material Icon Theme
+
+    More on Youtube:
+    
+      Configurando VSCode para Node.js, ReactJS e React Native | Diego Fernandes
+      https://www.youtube.com/watch?v=c7P03kkrEG8
+
+    
+
+
+
+
+    
+
+
+
+
+
+      
+
