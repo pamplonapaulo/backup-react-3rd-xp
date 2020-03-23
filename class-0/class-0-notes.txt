@@ -82,20 +82,73 @@ Starting up
 
     Starting!
 
-      The Package.json file:
+      0.1: The Package.json file:
 
-        backend (dev) $ npm init -y
+            _omnistack-week - 3/backend (dev) $ npm init -y
 
-      Frameworks:
+      0.2: Frameworks:
 
-        Express
-        It's a micro-framework (just a few features)
+            Express (helps on Routes and Parameters)
+            It's a micro-framework (just a few features)
 
-        backend (dev) $ npm install express      
+            _omnistack-week - 3/backend (dev) $ npm install express      
+
+      1.0: backend/index.js
+
+            const express = require('express');
+
+            const app = express();
+
+            app.get('/',  (request, response) => {
+              return response.send('Hello World')
+            })
+
+            app.listen(3333);
+
+      2.0: At the Terminal, run the file:
+
+            node index.js
+
+      3.0: At the browser, open the URL:
+
+            http://localhost:3333/
 
 
+      Done!
+
+      OBS: More cool stuff:
+
+        Chrome JSON Viewer
+
+          github.com/tulios/json-viewer
 
 
+    * Create React App
+
+      npx create-react-app frontend:
+
+      _omnistack-week - 3 (dev) $ npx create-react-app frontend
+
+      _omnistack-week - 3/frontend (dev) $ npm start
+      
+
+    At the browser, it opens by itself:
+
+            http://localhost:3000/
+
+
+    * React Native:
+
+    General introduction...
+
+    Something to remember: Expo has not bluetooth APIs.
+
+    Off-topic:
+
+      Watch it later:
+
+        Features do ES2020 para o JavaScript
+        https://www.youtube.com/watch?v=qaSwiYBC3sk&feature=emb_rel_pause
 
 
 
