@@ -1,0 +1,658 @@
+
+Class 1
+
+Class topics:
+
+  Routes & Features
+  HTTP methods
+  Parameters
+  Nodemon
+  Insomnia
+  DataBases
+  Entities
+  CORS
+  Banck-end to GitHub
+
+Terminal:
+
+  _omnistack-week - 3/backend (dev) $ 
+
+* Routes & Paths: 'recurso'
+
+  Exemplo de 'recurso': '/users'
+
+    app.get('/users',  (request, response) => {
+      return response.json({
+        evento: 'Semana OmniStack 11.0',
+        aluno: 'Paulo Pamplona'
+      })
+    })
+
+* HTTP Methods:
+
+  get: gets/lists data
+  post: posts/sends data
+  put: changes data
+  delete: deletes data
+
+* Insomnia Software:
+
+  But doesn't work in 32bits systems (old systems)
+
+  1.Create Workspace
+  2.New request
+  2.1 Name it: 'teste'
+  2.2 Set method type: post
+  3.Set URL: http://localhost:3333/users
+
+  Change the method in the backend/index.js:
+
+  app.post('/users',  (request, response) => {
+    return response.json({
+      evento: 'Semana OmniStack 11.0',
+      aluno: 'Paulo Pamplona'
+    })
+  })
+
+  Restart the server
+
+  Back to Insomnia, click 'send'.
+
+  We should get the preview like this:
+
+  {
+    "evento": "Semana OmniStack 11.0",
+    "aluno": "Paulo Pamplona"
+  }
+
+  Nice. We're good. Let's move on...
+
+  Insomnia tests our routes.
+
+* Parameters types:
+
+  1. Query Params: Parameters named/sent in the routes, after '?'. It filters the data.
+  
+    Note that these params are named params here:
+
+      Example:
+      Insomnia GET: http://localhost:3333/users?name=Paulo
+
+      Or:
+      Insomnia GET: http://localhost:3333/users?name=Paulo&age=41
+
+    ALSO:
+
+      1. if backend/index.js like this:
+
+        app.get('/users',  (request, response) => {
+          const params = request.query;
+
+          console.log(params);
+
+          return response.json({
+            evento: 'Semana OmniStack 11.0',
+            aluno: 'Paulo Pamplona'
+          })
+        })
+        
+      2. And if Insomnia request like this:
+
+        http://localhost:3333/users?name=Paulo
+
+      3. Terminal would run the console.log, returning the requested query 'request.query'
+
+        { name: 'Paulo' }
+
+      4. Or, if Insomnia request like this:
+
+        http://localhost:3333/users?name=Paulo&age=41
+
+      5. Terminal would show:
+
+        { name: 'Paulo', age: '41' }
+
+      And so on.
+
+
+  2. Route Params: Parameters used to identify 'recursos'
+
+    app.get('/users/:id',  (request, response) => {
+      return response.json({
+        evento: 'Semana OmniStack 11.0',
+        aluno: 'Paulo Pamplona'
+      })
+    })
+
+    Note that those params are not named here:
+    Insomnia GET: http://localhost:3333/users/1 (it means 'id' = 1)
+
+    ALSO:
+
+      1. if backend/index.js like this:
+
+        app.get('/users/:id',  (request, response) => {
+          const params = request.query;
+
+          console.log(params);
+
+          return response.json({
+            evento: 'Semana OmniStack 11.0',
+            aluno: 'Paulo Pamplona'
+          })
+        })
+        
+      2. And if Insomnia request like this:
+
+        http://localhost:3333/users/1
+
+      3. Terminal would run the console.log, returning the requested query 'request.query'
+
+        { id: '1' }
+
+      In these route params, we send one param at time - as we saw, query params let we send more by adding the '&' symbol.
+
+
+  3. Body request: 
+
+    1.backend/index.js:
+
+      MUST INCLUDE THIS BEFORE TO UNDERSTAND JSON:
+      app.use(express.json());
+
+      THEN:
+
+      app.post('/users/',  (request, response) => {
+        const body = request.body;
+
+        console.log(body);
+
+        return response.json({
+          evento: 'Semana OmniStack 11.0',
+          aluno: 'Paulo Pamplona'
+        })
+      })
+
+    2.Insomnia request:
+
+      POST http://localhost:3333/users
+
+      JSON:
+
+        {
+          "name": "Diego Fernandes",
+          "idade": 25
+        }
+
+      send
+    
+    3. Terminal should return the console.log:
+
+      { name: 'Diego Fernandes', idade: 25 }
+
+
+    
+* Nodemon:
+
+  1. Terminal install:
+
+    npm install nodemon -D
+
+      OBS: '-D' means "dev dependecy"
+
+  2. Edit package.json:
+
+    Include a script:
+
+      "scripts": {
+        "start": "nodemon index.js"
+      },
+
+  3. Run it at Terminal:
+
+    npm start
+
+  Good. Now there is no need to stop and restart the server every time we have any change in our code.
+
+
+* DataBases:
+
+  SQL: mySQL, SQLite, PostgreSQL, Oracle, Microsoft SQL Server, etc.
+  NoSQL: MongoDB, CouchDB, etc.
+
+  SQLite
+
+    1. Install driver: 
+    
+      'SELECT * FROM users'
+      
+      (it may change from a database to another database)
+
+    2. Query Builder:
+    
+      table('users').select('*').where()
+      
+      (doesn't change if you change the database)
+
+    2.1 KNEX.js
+    
+      The most used query builder in Node.js community
+
+      http://knexjs.org/
+
+      Install:
+
+        npm install knex
+
+        Also:
+
+        npm install sqlite3
+
+      Then run it:
+
+        npx knex init
+
+          It creates ./knexfile.js
+
+    3. New folders structure:
+
+      make dir: 'src'
+
+      move 'index.js' into it.
+
+      fix package.json: "start": "nodemon src/index.js"
+
+      new file 'routes.js', then move some stuff from index.js to this new file, like that:
+
+          const express = require('express');
+
+          const routes = express.Router();
+
+          routes.post('/users/',  (request, response) => {
+            const body = request.body;
+
+            console.log(body);
+
+            return response.json({
+              evento: 'Semana OmniStack 11.0',
+              aluno: 'Paulo da Silva Pamplona'
+            })
+          })
+
+          module.exports = routes;
+
+      after this index.js would have just that:
+
+          const express = require('express');
+          const routes = require('./routes');
+
+          const app = express();
+
+          app.use(express.json());
+          app.use(routes);
+
+          app.listen(3333);
+
+      So back to the 'knex.js' file, let's edit this line:
+
+        Originally:
+
+            development: {
+              client: 'sqlite3',
+              connection: {
+                filename: './dev.sqlite3'
+              }
+            },
+
+        After change:
+
+            development: {
+              client: 'sqlite3',
+              connection: {
+                filename: './src/database/db.sqlite'
+              }
+            },
+
+
+* Entities & functionalities:
+
+  Entity is everything that's going to be saved in the database:
+
+    1. ongs - non-governmental organizations
+    2. casos - incidents
+
+  Functionalities:
+
+    Login de ong
+    Logout de ong
+    Cadastro de ong
+    Cadastro de casos
+    Deletar casos
+    Listar casos específicos de uma ong
+    Listar todos os casos
+    Entrar em contato com a ong
+
+  
+  
+  Knex: migrations
+
+  http://knexjs.org/#Installation-migrations
+
+    Tables history (created, changed, etc.)
+
+  http://knexjs.org/#Migrations
+
+  
+  Inside ./src/database, crete new folder: 'migrations'
+
+  back to 'knexfile.js' file, include an extra item inside 'development':
+
+    migrations: {
+      directory: './src/database/migrations'
+    }
+
+    Like that:
+
+    development: {
+      client: 'sqlite3',
+      connection: {
+        filename: './src/database/db.sqlite'
+      },
+      migrations: {
+        directory: './src/database/migrations'
+      }
+    },
+
+
+  Now run this on Terminal:
+
+    _omnistack-week - 3/backend (dev) $ npx knex migrate:make create_ongs
+
+  An error should happen:
+
+    sqlite does not support inserting default values. Set the `useNullAsDefault` flag to hide this warning. (see docs http://knexjs.org/#Builder-insert).
+
+  We'll fix this back to the 'knexfile.js':
+  
+    by adding 'useNullAsDefault: true'
+
+    like that:
+
+      development: {
+        client: 'sqlite3',
+        connection: {
+          filename: './src/database/db.sqlite'
+        },
+        migrations: {
+          directory: './src/database/migrations'
+        },
+        useNullAsDefault: true
+      },
+
+  Back to the Knewx documentation:
+
+  Schema Builder
+    The knex.schema is a getter function, which returns a stateful object containing the query. Therefore be sure to obtain a new instance of the knex.schema for every query. These methods return promises.
+
+  createTable — knex.schema.createTable(tableName, callback)
+    Creates a new table on the database, with a callback function to modify the table's structure, using the schema-building commands.
+
+  There we learn how to work with the file inside folder src/database/migrations. Here is:
+
+  A fresh file looks like this:
+
+    exports.up = function(knex) {
+      
+    };
+
+    exports.down = function(knex) {
+      
+    };
+
+  So we actually want this:
+
+  exports.up = function(knex) {
+    return knex.schema.createTable('ongs', function (table) {
+      table.string('id').primary();
+      table.string('name').notNullable();
+      table.string('email').notNullable();
+      table.string('whatsapp').notNullable();
+      table.string('city').notNullable();
+      table.string('uf', 2).notNullable();
+    })
+  };
+
+  exports.down = function(knex) {
+    return knex.schema.dropTable('ongs');
+  };
+
+  OBS:
+  The UP method above creates the table.
+  The DOWN method deletes the table.
+
+  Now let's crete the table running this on the Terminal:
+
+    npx knex migrate:latest
+
+  And just like that we got our database inside the 'src/database' folder:
+
+    ./src/database/db.sqlite
+
+  Now it's time to create another table: incidents
+
+  On Terminal:
+
+    npx knex migrate:make create_ongs
+
+  New file created. After editing it, should look like this:
+
+    exports.up = function(knex) {
+      return knex.schema.createTable('incidents', function (table) {
+        table.increments();
+
+        table.string('title').notNullable();
+        table.string('description').notNullable();
+        table.decimal('value').notNullable();
+
+        table.string('ond_id').notNullable();
+
+        table.foreign('ond_id').references('id').inTable('ongs');
+      })
+    };
+
+    exports.down = function(knex) {
+      return knex.schema.dropTable('incidents');
+    };
+
+  Then we run the same previous command to build this table:
+
+    npx knex migrate:latest
+
+  Tips:
+
+  If we run:
+
+    npx knex
+
+  It lists all commands.
+
+  An example: rollback undo the previous migration you did.
+
+    npx knex migrate:rollback
+
+  See all migrations you did:
+
+    npx knex migrate:status
+
+  
+  Ok. Let's change our routes.js. For now, it will be just:
+
+    const express = require('express');
+
+    const routes = express.Router();
+
+    routes.post('/ongs/',  (request, response) => {
+      const data = request.body;
+
+      console.log(data);
+
+      return response.json();
+    })
+
+    module.exports = routes;
+
+  Restart the server:
+  
+    'npm start'
+
+  Back to Insomnia:
+
+  - delete the 'test' request;
+  - there, create 'ongs' folder (cuz we gonna have a few requests);
+  - create a request named 'Create', with 'POST' method and 'JSON' text;
+  - url: http://localhost:3333/ongs
+  - json: 
+    {
+      "name": "APAD",
+      "email": "apad@apad.com.br",
+      "whatsapp": "+551199999999",
+      "city": "Rio do Sul",
+      "uf": "Santa Catarina"
+    }
+
+  A little change at routes.js: destructuring
+
+    routes.post('/ongs/',  (request, response) => {
+      const { name, email, whatsapp, city, uf } = request.body;
+
+      console.log(data);
+
+      return response.json();
+    })
+
+  Also, what about the ID? There are many strategies possibles. Let's see professor's:
+
+  - Using CRYPTO
+
+    const express = require('express');
+    const crypto = require('crypto');
+    const routes = express.Router();
+
+    routes.post('/ongs/',  (request, response) => {
+      const { name, email, whatsapp, city, uf } = request.body;
+
+      const id = crypto.randomBytes(4).toString('HEX');
+
+      return response.json();
+    })
+
+    module.exports = routes;
+
+
+  Back to folder 'src/database':
+
+    new file: 'connection.js'
+
+  Containing:
+
+    const knex = require('knex');
+    const configuration = require('../../knexfile');
+
+    const connection = knex(configuration.development);
+
+    module.exports = connection;
+
+
+  Now more deep changes in routes.js:
+
+    const express = require('express');
+    const crypto = require('crypto');
+    const connection = require('./database/connection');
+
+    const routes = express.Router();
+
+    routes.post('/ongs/',  async (request, response) => {
+      const { name, email, whatsapp, city, uf } = request.body;
+
+      const id = crypto.randomBytes(4).toString('HEX');
+
+      await connection('ongs').insert({
+        id,
+        name,
+        email,
+        whatsapp,
+        city,
+        uf
+      })
+
+      return response.json();
+    })
+
+    module.exports = routes;
+
+    async + await:
+    makes the code first wait all data, then move forward.
+
+    So far everything works. We posted from Insomnia and got back an ID. Nice.
+
+    Now let's code a second route to list everything. Same 'routes.js'
+
+      routes.get('./ongs', async (request, response) => {
+        const ongs = await connection('ongs').select('*');
+
+        return response.json(ongs);
+      })
+
+    Back to Insomnia:
+
+      - duplicate previous request
+      - rename it: 'List'
+      - change it's method: 'GET'
+      - change it's body: 'No Body'
+
+    
+
+
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+
+  So for a while we kept coding other routes or http methods if you will.
+
+  Now one thing to consider: Model View Controller (MVC) best practices recommends no more than 5 methods in a single controller.
+
+  If you have 2 or more methods for the same entity, make another controller.
+
+
+  CORS: who can access this API?
+
+    Terminal:
+
+      npm install cors
+      
+    Edit index.js:
+
+      1. Import it:
+
+        const cors = require('cors');
+
+      2. Then run it:
+
+        2.1 Normally, a real-world app in production would be:
+
+          app.use(cors({
+            origin: 'http://fanfarrada.com.br'
+          }));
+
+        2.2 But since we are just on development:
+
+          app.use(cors());
+
+        That way above any request is allowed, which may not be safe depending on our purposes.
+
+
+
+
+
+
+
+
