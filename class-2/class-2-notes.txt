@@ -1,0 +1,133 @@
+
+Class 2: web interface
+
+  Sumary
+
+    - Cleaning up the structure
+    - React concepts
+      . Component
+      . JSX (JavaScript XML)
+      . Properties
+      . State
+      . Immutability
+    - Login page
+    - Setting Routes
+    - Setting new ONG
+    - Listing incidents
+    - Setting new incidents
+    - Connect to the API
+
+  Reminding:
+
+    _omnistack-week - 3/frontend (dev) $ npm start
+
+  Component:
+
+    Always with Capital, otherwise doesn't work.
+
+  Properties:
+
+    Syntaxe looks like HTML attributes, but passed on React Components, not HTML elements.
+
+    App.js:
+
+      function App() {
+        return (
+          <Header title="Semana Omnistack" />
+        );
+      }
+
+    Header.js:
+
+      export default function Header(props) {
+        return (
+          <header>
+            <h1>{props.title}</h1>
+          </header>
+        )
+      }
+
+    OR: {props.children}
+
+        App.js:
+
+          function App() {
+            return (
+              <Header>
+                Semana Omnistack
+              </Header>
+            );
+          }
+
+        Header.js:
+
+          export default function Header(props) {
+            return (
+              <header>
+                <h1>{props.children}</h1>
+              </header>
+            )
+          }
+
+      OR: { destructuring }
+
+        Header.js
+
+        export default function Header({ children }) {
+          return (
+            <header>
+              <h1>{children}</h1>
+            </header>
+          )
+        }
+
+  Export Default:
+
+    As I use to see:
+
+      export default Header; (at the bottom)
+
+    As prof.Diego just did:
+
+      export default function Header() {
+        return (
+          <header>
+            <h1>Be The Hero</h1>
+          </header>
+        )
+      }
+
+State:
+
+  An info that the component keeps for a period, such as user's input, something from an external api, anything that the app work over it.
+
+  useState() is actually an array: [ value, updateFunction ]
+
+Immutability:
+
+  For performance purposes, we never change values directly.
+  We run the update function contained inside the useState(), as we show bellow:
+
+    function App() {
+
+      const [counter, setCounter] = useState(0);
+
+      function increment() {
+        setCounter(counter + 1);
+      }
+
+      return (
+        <div>
+          <Header>
+            Counter: {counter}
+          </Header>
+          <button onClick={increment}>Increment</button>
+        </div>
+      );
+    }
+
+
+
+
+
+  

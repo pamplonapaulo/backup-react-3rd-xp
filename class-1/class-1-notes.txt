@@ -1,7 +1,7 @@
 
 Class 1
 
-Class topics:
+Sumary:
 
   Routes & Features
   HTTP methods
