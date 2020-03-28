@@ -127,7 +127,113 @@ Immutability:
     }
 
 
+  Emmet + VS Code + React:
 
+    Search the settings.json file:
 
+    ctrl or command + shift + P: settings.json:
+
+          "emmet.syntaxProfiles": {
+              "javascript": "jsx",
+          },
+          "emmet.includeLanguages": {
+              "javascript": "javascriptreact",
+          },
+
+  Free Icons:
+
+    https://material.io/
+    https://fontawesome.com/
+    https://feathericons.com/
+
+    Getting Icon Packages from Terminal:
+
+      npm install react-icons
+
+    Importing it:
+
+      import {} from 'react-icons/fi' Feather Icons
+      import {} from 'react-icons/fa' Font Awesome
+      import {} from 'react-icons/md' Material Design
+
+      And so on...
+
+      Then inside the {}, hit: ctrl + space
+
+      It shows you all the stuff!
+
+      Example:
+      
+        import { FiLogIn } from 'react-icons/fi';
+
+      JSX:
+
+        <FiLogIn size={16} color="#E02041" />
+
+    
+  Routes Package:
+  
+    Install on Terminal:
+
+      npm install react-router-dom
+
+  routes.js
+
+    import React from 'react';
+    import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+    import Logon from './pages/Logon';
+
+    export default function Routes() {
+      return (
+        <BrowserRouter>
+          <Switch>
+            <Route path="/" component={Logon} />
+          </Switch>
+        </BrowserRouter>
+      )
+    }
 
   
+  TIP VS CODE:
+
+    You can also add more cursors with Ctrl+Shift+L (Mac: Command+Shift+L), which will add a selection at each occurrence of the current selected text.
+
+
+  OBS about braces/ curly brackets in React:
+
+    <input style={{ width: 80 }}/>
+
+    - The first wrapp of curly brackets means a JS code.
+    - The second wrapp means an JS object.
+
+  
+  * Connecting frontend with backend
+
+  http client:
+
+    A http client handles requests and responses to/ from API
+
+    At Terminal inside frontend folder, install:
+
+      _omnistack-week - 3/frontend (dev) $ npm install axios
+
+    Then create a folder called 'services' and 'api.js' file:
+
+      _omnistack-week - 3/frontend/src/services/api.js
+
+    Containing:
+
+      import axios from 'axios';
+
+      const api = axios.create({
+        baseURL: 'http://localhost:3333',
+      })
+
+      export default api;
+
+    
+    Formatação de moedas:
+
+      <p>{Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL'}).format(incident.value)}</p>
+

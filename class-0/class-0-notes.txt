@@ -27,10 +27,7 @@ Starting up
 
       powershell.exe (only Windows): Open it in admin mode.
 
-  Visual Studio Code
-
-    Settings:
-
+  Visual Studio Code Settings
 
     Extensions:
     
@@ -44,6 +41,9 @@ Starting up
     
       Configurando VSCode para Node.js, ReactJS e React Native | Diego Fernandes
       https://www.youtube.com/watch?v=c7P03kkrEG8
+
+    3. Fira Code / Font Ligatures (VSCode special font)
+
 
 
     Managing node versions:
