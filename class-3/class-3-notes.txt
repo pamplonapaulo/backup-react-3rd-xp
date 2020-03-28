@@ -220,24 +220,292 @@ Class 3: mobile app (React Native)
 
           It means a padding with the size of the status bar + 20 pixels.
 
-          Whatsapp + Email
+        Whatsapp + Email
 
-          Terminal:
+
+          Email
+
+            Terminal:
 
             expo install expo-mail-composer
 
+            http://docs.expo.io/versions/latest/sdk/mail-composer/
+
+          Code:
+
+            import * as MailComposer from 'expo-mail-composer';
+
+            const message = 'Olá, ONG, estou em contato para salvar a cachorrinha atropelada, com o valor de R$120,00.';
+
+            function sendMail() {
+              MailComposer.composeAsync({
+                subject: 'Herói do caso: cadelinha atropelada',
+                recipients: ['pamplonapaulo@gmail.com'],
+                body: message
+              })
+            }
+
+            <TouchableOpacity style={styles.action} onPress={sendMail}>
+              <Text style={styles.actionText}>E-mail</Text>
+            </TouchableOpacity>
 
 
+        Whatsapp: Deep Linking
+
+          Code:
+
+            import { Linking } from 'react-native';
+
+            const message = 'Olá, ONG, estou em contato para salvar a cachorrinha atropelada, com o valor de R$120,00.';
+
+            function sendWhatsapp() {
+              Linking.openURL(`whatsapp://send?phone=+5521992355544&text=${message}`);
+            }
+
+            <TouchableOpacity style={styles.action} onPress={sendWhatsapp}>
+              <Text style={styles.actionText}>Whatsapp</Text>
+            </TouchableOpacity>
+
+        Connecting App with Backend:
+
+        Axios:
+
+        Terminal:
+
+        _omnistack-week - 3/app-mobile (dev) $ npm install axios
+
+        mk dir:
+
+          app-mobile/src/services/api.js
+
+        api.js:
+
+          import axios from 'axios';
+
+          const api = axios.create({
+            baseURL: ''
+          });
+
+        But which URL we gonna use in this development environment with localhost?
+
+        Answer: Inside the Expo, above the QR code there is a URL with your machine's IP address, such as: exp://192.168.0.10:19000 (but without the port, just '192.168.0.10' )
+
+        Use this adress insted of 'localhost' or something like that. This is your phone reaching the IP of your desktop machine.
+
+        Same IP adress can be found in a Mac by 'System preferences' => Network.
+
+        Now put the address added by the port on use at our Node backend server:
+
+        api.js:
+
+          import axios from 'axios';
+
+          const api = axios.create({
+            baseURL: 'http://192.168.0.10:3333'
+          });
+
+          export default api;
+
+        Now let's update the index.js files to use this api.js: 
+        
+        Updates for both of these two files:
+
+          Incidents/index.js
+          Detail/index.js
+
+            import React, { useEffect } from 'react';
+            import api from '../../services/api';
+
+          Incidents/index.js:
+
+          export default function Incidents() {
+            const [incidents, setIncidents] = useState([]);
+
+            async function loadIncidents() {
+              const response = await api.get('incidents');
+
+              setIncidents(response.data);
+            }
+
+            useEffect(() => {
+              loadIncidents();
+            }, []);
+
+            Etc.
+
+            <FlatList 
+              data={incidents}
+              style={styles.incidentList}
+              keyExtractor={incident => String(incident.id)}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item: incident }) => (
+                <View style={styles.incident}>
+                  <Text style={styles.incidentProperty}>ONG:</Text>
+                  <Text style={styles.incidentValue}>{incident.name}</Text>
+
+                  <Text style={styles.incidentProperty}>CASO:</Text>
+                  <Text style={styles.incidentValue}>{incident.title}</Text>
+
+                  <Text style={styles.incidentProperty}>VALOR:</Text>
+                  <Text style={styles.incidentValue}>{incident.value}</Text>
+
+                  <TouchableOpacity 
+                    style={styles.detailsButton} 
+                    onPress={navigateToDetail}
+                  >
+                    <Text style={styles.detailsButtonText}>Ver mais detalhes</Text>
+                    <Feather name="arrow-right" size={16} color="#e02041" />
+
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+
+          }
 
 
+        Extra dependency to get a proper currency format
+
+          Terminal:
+
+          _omnistack-week - 3/app-mobile (dev) $ npm install intl
+
+        Then we gonna import it inside the App.js, which carries the intl to every other files of the project.
+
+          import 'intl';
+          import 'intl/locale-data/jsonp/pt-BR';
 
 
+        Warning: since I installed 'expo install expo-mail-composer', for every single new dependency installed, the project gets an error while compiling. An error in the 'expo-mail-composer'.
 
+        So I'm fixing it by running again the install.  Yeah, it sucks.
 
+        Total of Incidents:
 
+          export default function Incidents() {
+            const [ total, setTotal] = useState(0);
 
+            async function loadIncidents() {
+              const response = await api.get('incidents');
 
+              setTotal(response.headers['x-total-count']);
+            }
 
-  
-  
+            return (
+              <Text style={styles.headerTextBold}>{total} casos</Text>.
+            )
+          }
+
+        Transfering 'incident' parameter from  Incidents/index to Detail/index:
+
+          function navigateToDetail(incident) {
+            navigation.navigate('Detail', { incident });
+          }
+          
+        And insted of:
+
+          <TouchableOpacity 
+            onPress={navigateToDetail}
+          >
+
+        We use a arrow function that calls the other function, otherwise the function containing a parameter would auto-execute when the DOM is rendered:
+
+          <TouchableOpacity 
+            onPress={() => navigateToDetail(incident)}
+          >
+
+        That was at Incidents/index.js. Now at Detail/index.js:
+
+        export default function Detail() {
+
+          const incident = route.params.incident;
+
+          return (
+            <Text style={styles.incidentValue}>{incident.name}</Text>
+            <Text style={styles.incidentValue}>{incident.title}</Text>
+            <Text style={styles.incidentValue}>
+              {Intl.NumberFormat('pt-BR', {
+                 style: 'currency', 
+                 currency: 'BRL' 
+              }).format(incident.value)}
+            </Text>
+          )
+        }
+
+      Then once now we have this data coming from the params, professor also updated the code of contacting by whatsapp or email:
+
+        const message = `Olá, ${incident.name}, estou em contato pois gostaria de ajudar no caso "${incident.title}", com o valor de ${Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(incident.value)}.`;
+
+        function sendMail() {
+          MailComposer.composeAsync({
+            subject: `Herói do caso: ${incident.title}`,
+            recipients: [incident.email],
+            body: message
+          })
+        }
+
+        function sendWhatsapp() {
+          Linking.openURL(`whatsapp://send?phone=${incident.whatsapp}&text=${message}`);
+        }
+
+      Infinite scroll/pagination:
+
+        Incidents/index.js:
+
+        export default function Incidents() {
+          const [page, setPage] = useState(1);
+          const [loading, setLoading] = useState(false);
+        }
+
+        page: What page user is at the moment?
+        lopading: What page had been already loaded? (It prevents to be loaded again)
+
+        async function loadIncidents() {
+          if (loading) {
+            return;
+          } => if page is on load process, user cannot load again until first the loading ends.
+
+          if (total > 0 && incidents.length === total) {
+            return;
+          } => if everything is already loaded, no more loads available.
+
+          setLoading(true);
+
+          const response = await api.get('incidents');
+
+          setIncidents([...incidents, ...response.data]);
+
+          What means this line above?
+          ...incidents => everything already in 'incidents'
+          ...response.data => everything else being loaded
+          (so we accumulate 1st page with 2nd and so on)
+
+          setTotal(response.headers['x-total-count']);
+          setPage(page + 1);
+          setLoading(false);
+        }
+
+        <FlatList 
+
+          onEndReached={loadIncidents}
+          => calls loadIncidents when the end of the list is reached
+
+          onEndReachedThreshold={0.2}
+          => sets what is consided the end of the list being reached
+          => 1 means 100% and 0.1 means 10%
+
+        />
+
+        Also:
+
+          const response = await api.get(`incidents?page=${page}`);
+
+        Or, better:
+
+          const response = await api.get('incidents', {
+            params: { page }
+          });
+
+          
+
 
