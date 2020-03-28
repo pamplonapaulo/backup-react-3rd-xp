@@ -1,0 +1,243 @@
+
+Class 3: mobile app (React Native)
+
+  Sumary
+
+    - Expo install
+    - Create React Native project
+    - Running the project
+      . at the mobile
+      . emulators
+      . Expo Snack
+    - ReactJS vs. React Native
+      . HTML elements
+      . semantic
+      . styling
+        - flexbox
+        - properties
+        - inheritance
+        - custom styling
+
+    - Folders structure
+    - Icon & Splash Screen
+    - Setting up navigation
+    - Incidents' page
+    - Incident's datail's page
+    - Connection with Whatsapp & Email
+    - Connection with API
+
+  
+  
+  Expo GLOBAL install:
+
+    npm install -g expo-cli 
+
+  Check install (help menu):
+
+    expo -h
+
+  Also: https://github.com/Rocketseat/expo-common-issues
+
+  Start a project:
+
+    expo init <project name>
+
+  In our case: 'mobile'
+
+    /_omnistack-week - 3/mobile (dev) $
+
+  Download the Expo app in your smartphone.
+
+  Run Expo on Terminal:
+
+    /_omnistack-week - 3/mobile (dev) $ yarn start
+
+  Then just scan the QR code with the Expo app in your smartphone.
+
+  Other options:
+
+    1.Emulating:
+
+      Emulating React Native on iOS/Android with Expo | Code/Drops #03
+      https://www.youtube.com/watch?v=eSjFDWYkdxM&vl=en
+
+    2.Expo Snack
+
+      https://snack.expo.io
+
+
+  React Native X ReactJS:
+
+    Files are mostly pretty similar.
+
+  app.json 
+  
+    kinda package.json
+
+  HTML elements
+
+    Unlike semantic html tag elements, React Native doesn't have the same tags.
+    We use DIVs for everything, or <View> or <Text> if you will.
+
+  Styling
+
+    => style property with an object:
+
+    <View style={styles.container}>
+
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1,
+        backgroundColor: '#7159c1',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+    });
+
+    Flexbox:
+
+      default in React Native is display: flex
+
+    Properties
+
+      1. No hyphen, but camel case: backgroundColor
+
+      2. Everything that is not a number have to come inside single quote.
+
+    Inheritance
+
+      There is no such thing in React Native. No inheritance at all. Must include style in every single child.
+
+    Old backup: App.js
+
+      import React from 'react';
+      import { StyleSheet, Text, View } from 'react-native';
+
+      export default function App() {
+        return (
+          <View style={styles.container}>
+            <Text style={styles.title}>Be The Hero!</Text>
+          </View>
+        );
+      }
+
+      const styles = StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: '#7159c1',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff'
+        },
+
+        title: {
+          color: '#fff',
+          fontSize: 20,
+          fontWeight: 'bold'
+        }
+      });
+
+  Splash
+
+    The image showed while app it's being loaded.
+
+    At Expo App, shake the smartphone to open the menu where the 'reaload' option is available.
+
+  
+  app.json - backgroundColor:
+
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#e02041"
+      },
+
+  Routes in Expo:
+
+    https://docs.expo.io/versions/latest/guides/routing-and-navigation/
+
+    Lib: 'react-navigation'
+
+      https://reactnavigation.org/
+
+    Install:
+
+      npm install @react-navigation/native
+
+    Also install dependencies:
+
+      expo install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-native-community/masked-view
+
+    Then, check the different navigation styles:
+
+      https://reactnavigation.org/docs/hello-react-navigation
+
+      The most common navigator, createStackNavigator
+
+      Installing the stack navigator:
+
+        npm install @react-navigation/stack
+
+      src/routes.js:
+
+        import React from 'react';
+        import { NavigationContainer } from '@react-navigation/native';
+        import { createStackNavigator } from '@react-navigation/stack';
+
+        const AppStack = createStackNavigator();
+
+        import Incidents from './pages/Incidents';
+        import Detail from './pages/Detail';
+
+        export default function Routes() {
+          return (
+            <NavigationContainer>
+              <AppStack.Navigator>
+                <AppStack.Screen name="Incidents" component={Incidents} />
+                <AppStack.Screen name="Detail" component={Detail} />
+              </AppStack.Navigator>
+            </NavigationContainer>
+          );
+        }
+
+
+        Another dependency:
+
+          expo install expo-constants
+
+          So we use it like that:
+
+            import { StyleSheet } from 'react-native';
+            import Constants from 'expo-constants';
+
+            export default StyleSheet.create({
+              container: {
+                flex: 1,
+                paddingHorizontal: 24,
+                paddingTop: Constants.statusBarHeight + 20,
+              }
+            });
+
+          It means a padding with the size of the status bar + 20 pixels.
+
+          Whatsapp + Email
+
+          Terminal:
+
+            expo install expo-mail-composer
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
