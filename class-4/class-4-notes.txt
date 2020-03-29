@@ -1,0 +1,445 @@
+
+Class 4: advanced features
+
+  Sumary
+
+    - Validation
+    - Tests
+      . Why?
+      . TDD
+      . Jest
+      . Test types
+      . Setting tests
+      . Supertest install
+      . Authentication Routes Tests
+    - Deploy
+      . Options
+      . Which one?
+    - Moving forward
+      . Code standards: ESLint, Prettier
+      . JWT Authentication
+      . Styled components
+    - Tips
+      . Git
+      . LinkedIn
+
+
+
+
+    - Validation on the backend
+
+      Form Validation: celebrate
+      https://github.com/arb/celebrate
+
+      It came from another lib: joy/hapi.
+      https://github.com/hapijs/joi
+
+
+      Terminal:
+
+        _omnistack-week - 3/backend (dev) $ npm install celebrate
+
+      Validation must be with Routes definitions
+
+        Use them with routes that create or change something, or in any route that needs a paramets, so you validate this parameter: if have to be a number, for example.
+
+      routes.js
+
+        const { celebrate, Segment, Joi } = require('celebrate');
+
+        routes.post('/ongs', celebrate(), OngController.create);
+
+        (See express middleware concept)
+
+      
+      Route Parameters
+
+      Celebrate can validate all kind of parameter in a route:
+
+        export declare enum Segments {
+            PARAMS        = 'params',
+            HEADERS       = 'headers',
+            QUERY         = 'query',
+            COOKIES       = 'cookies',
+            SIGNEDCOOKIES = 'signedCookies',
+            BODY          = 'body',
+        }
+
+        backend/src/index.js:
+
+          const { errors } = require('celebrate');
+
+          app.use(errors());
+
+        backend/src/routes.js:
+
+          const express = require('express');
+          const { celebrate, Segments, Joi } = require('celebrate');
+
+          const OngController = require('./controllers/OngController');
+          const IncidentsController = require('./controllers/IncidentController');
+          const ProfileController = require('./controllers/ProfileController');
+          const SessionController = require('./controllers/SessionController');
+
+          const routes = express.Router();
+
+          routes.post('/sessions', SessionController.create);
+
+          routes.get('/ongs', OngController.index);
+
+          routes.post('/ongs', celebrate({
+            [Segments.BODY]: Joi.object().keys({
+              name: Joi.string().required(),
+              email: Joi.string().required().email(),
+              //whatsapp: Joi.number().required().min(10).max(11), <== not working
+              whatsapp: Joi.number().required(),
+              city: Joi.string().required(),
+              uf: Joi.string().required().length(2),
+            })
+          }), OngController.create);
+
+          routes.get('/profile', celebrate({
+            [Segments.HEADERS]: Joi.object({
+              authorization: Joi.string().required(),    
+            }).unknown(),
+          }), ProfileController.index);
+
+          routes.get('/incidents', celebrate({
+            [Segments.QUERY]: Joi.object().keys({
+              page: Joi.number(),
+            })
+          }), IncidentsController.index);
+
+          routes.post('/incidents', IncidentsController.create);
+
+          routes.delete('/incidents/:id', celebrate({
+            [Segments.PARAMS]: Joi.object().keys({
+              id: Joi.number().required(),
+            })
+          }), IncidentsController.delete);
+
+          module.exports = routes;
+
+
+
+
+        Tests:
+
+          TDD: Test Driven Development
+
+        Jest
+
+          https://jestjs.io/
+
+        Install Jest:
+
+          _omnistack-week - 3/backend (dev) $ npm install jest
+
+        Run:
+
+          _omnistack-week - 3/backend (dev) $ npx jest --init
+
+      Jests asks a few questions:
+
+        ✔ Would you like to use Jest when running "test" script in "package.json"? … yes
+        ✔ Choose the test environment that will be used for testing › node
+        ✔ Do you want Jest to add coverage reports? … no
+        ✔ Automatically clear mock calls and instances between every test? … yes
+
+
+        Tests types:
+
+          Integration Tests:
+          
+            It tests something in the whole flow of the code in the application.
+
+          Unit Tests: 
+          
+            It tests a single piece of code very specific in the application.
+
+          
+        Unit code to be tested: src/utils/generateUniqueId.js
+
+          const crypto = require('crypto');
+
+          module.exports = function generateUniqueId() {
+            return crypto.randomBytes(4).toString('HEX');
+          }
+
+        Test code to test the unit: src/utils/generateUniqueId.spec.js
+
+          const generateUniqueId = require('../../src/utils/generateUniqueId');
+
+          describe('Generate Unique ID', () => {
+            it('should generate an unique ID', () => {
+              const id = generateUniqueId();
+              
+              expect(id).toHaveLength(8);
+            });
+          });
+
+        Running a test:
+
+          _omnistack-week - 3/backend (dev) $ npm test
+
+        ATTENTION:
+
+          'export default' does not exist in NODE.js
+
+          Use 'module.exports'
+
+
+        DataBase tests:
+
+          At knexfile.js, include this:
+
+            test: {
+              client: 'sqlite3',
+              connection: {
+                filename: './src/database/test.sqlite'
+              },
+              migrations: {
+                directory: './src/database/migrations'
+              },
+              useNullAsDefault: true,
+            },
+
+
+        The test environment:
+
+        CROSS-ENV:
+
+        https://github.com/kentcdodds/cross-env
+
+          Install:
+
+            _omnistack-week - 3/backend (dev) $ npm install cross-env
+
+        Now edit package.json:
+
+          Overrride the test script:
+
+            "test": "jest",
+
+          To be this:
+
+            "test": "cross-env NODE_ENV=test jest",
+
+        Then once we run 'npm test' we gonna have an test environment variable called 'NODE-ENV'
+
+          How to access it?
+
+          sr/database/connection.js:
+
+            const config = process.env.NODE_ENV === 'test' ? configuration.test : configuration.development;
+
+            const connection = knex(config);
+
+        So depending on which server you run (Jest test server or regular Node), the NODE_ENV var will be set as 'test' and connection will consider the proper knex() parameter: configuration.test OR configuration.development;
+
+        Read more at:
+        https://blog.rocketseat.com.br/variaveis-ambiente-nodejs/
+        
+        
+        So now with all set, let's create our first integration test:
+
+          backend/tests/integration/ong.spec.js
+
+          This single file can handle all features of ONGs: create, delete, list, etc.
+
+        In this test, we need a lib to hanlde calls to the API, so we can have the simulations working. Axios can help us on that, it works only on the front-end. We gonna use a lib called "Supertest'.
+
+        Supertest
+
+        https://github.com/visionmedia/supertest
+
+        Beyond http requests, it handles some extras validations.
+
+        Install supertest as a dev dependency:
+
+          npm install supertest -D 
+
+        
+        
+        Before code the test, we have to change a few things about our server:
+
+        1. Rename src/index.js to app.js
+
+        2. Then inside this app.js:
+        
+          Insted of:
+          
+            app.listen(3333);
+
+          Repalce this line with:
+          
+            module.exports = app;
+
+        3. Create a new file named 'server.js':
+        
+          backend/src/server.js
+
+        4. Then inside this server.js:
+
+          const app = require('./app')
+
+          app.listen(3333);
+
+        5. Finally, let the "scripts": { } inside 'package.json' be aware of this:
+        
+          Insted of:
+          
+            "start": "nodemon src/index.js"
+
+          Replace with:
+          
+            "start": "nodemon src/server.js"
+
+        6. Before the test in the DB:
+        
+          6.1 a migration is a must (see 'migrate.latest')
+          6.2 clear the DB before the test (see 'migrate.rollback')
+
+        http://knexjs.org/#Migrations-latest
+
+          beforeEach(async () => {
+            await connection.migrate.rollback();
+            await connection.migrate.latest();
+          });
+
+        7. Also, the connection should shut down after the process:
+
+          afterAll(async () => {
+            await connection.destroy();
+          })
+
+
+        8. That said, here is the test's code itself:
+        
+          backend/tests/integration/ong.spec.js:
+
+            const request = require('supertest');
+            const app = require('../../src/app');
+            const connection = require('../../src/database/connection');
+
+            describe('ONG', () => {
+              beforeEach(async () => {
+                await connection.migrate.rollback();
+                await connection.migrate.latest();
+              });
+
+              afterAll(async () => {
+                await connection.destroy();
+              })
+
+              it('should be able to create a new ONG', async () => {
+                const response = await request(app)
+                  .post('/ongs')
+                  .send({
+                    name: "ONG TEST",
+                    email: "test@email.com.br",
+                    whatsapp: "1197770000",
+                    city: "São Teste",
+                    uf: "TS"
+                  });
+
+                  console.log(response.body);
+                  expect(response.body).toHaveProperty('id');
+                  expect(response.body.id).toHaveLength(8);
+              });
+            });
+
+        9. Further tests for the remaining routs, we may need to set a header authorization. If so, here is how to do it:
+
+        it('should be able to create a new ONG', async () => {
+          const response = await request(app)
+            .post('/ongs')
+
+     =>     .set('Authorization', 'here an valid ong's Id')
+
+            .send({
+              name: "ONG TEST",
+              email: "test@email.com.br",
+              whatsapp: "1197770000",
+              city: "São Teste",
+              uf: "TS"
+            });
+
+            console.log(response.body);
+            expect(response.body).toHaveProperty('id');
+            expect(response.body.id).toHaveLength(8);
+        });
+
+        Obs: But make sure you created this ong before! Lol
+
+
+      Deploy, Hosting, Etc.
+
+        For Node projects:
+
+        1. https://www.heroku.com/
+
+          Ddisadvantage: expensive for big applications
+
+          Advantage: free for small applications
+
+          Tutorial:
+          https://www.youtube.com/watch?v=-j7vLmBMsEU
+
+        2. https://www.digitalocean.com/
+
+          Advantage: easy to predict how much it costs.
+
+          Tutorial:
+          https://www.youtube.com/watch?v=ICIz5dE3Xfg
+
+        3. AWS
+
+        4. Google Cloud Platform
+
+        5. Microsoft Azure
+
+
+
+        For Front-end projects:
+
+        1. Netlify (good for React.js, Veu, Angular)
+
+          Ddisadvantage: expensive for big applications
+
+          Advantage: free for small applications
+
+
+        React Native APK generation:
+
+          https://www.youtube.com/watch?v=wYMvzbfBdYI
+
+          Stores' Prices:
+
+            iOS: 99 USD / month
+
+            Google: 25 USD / month
+
+
+        Recommendations:
+
+          - ESLint and Prettier (check RocketSeat Youtube)
+
+          - JWT Authentication (check RocketSeat Youtube)
+
+          - Style Components (check RocketSeat Youtube)
+
+          
+
+
+
+        
+
+
+
+
+
+          
+
+
+
